@@ -1,5 +1,14 @@
 import { createApp } from 'vue'
+import Toast, { POSITION } from 'vue-toastification'
 import App from './App.vue'
-import store from './store'
+import router from '../../ds-dashboard/src/router'
 
-createApp(App).use(store).mount('#app')
+import 'animate.css'
+import '@/assets/css/tailwind.css'
+import '@/assets/css/fonts.css'
+import 'vue-toastification/dist/index.css'
+
+const app = createApp(App)
+app.use(router)
+app.use(Toast, { position: POSITION.BOTTOM_RIGHT })
+app.mount('#app')
