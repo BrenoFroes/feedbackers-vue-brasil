@@ -1,7 +1,7 @@
 import { createApp } from 'vue'
 import Toast, { POSITION } from 'vue-toastification'
 import App from './App.vue'
-import router from '../../ds-dashboard/src/router'
+import router from '../src/router'
 
 import 'animate.css'
 import '@/assets/css/tailwind.css'
