@@ -21,14 +21,15 @@
       <content-loader
         v-if="store.Global.isLoading || state.isLoading"
         class="rounded"
-        width="602px"
+        width="600px"
         height="52px"
       />
       <div v-else class="flex py-3 pl-5 mt-2 rounded justify-between items-center bg-brand-gray w-full lg:w-1/2">
-        <span>{{ store.User.currentUser.apiKey }}</span>
-        <div class="flex items-center align-items-center justify-center ml-20 mr-5">
-          <icon name="copy" :color="brandColors.graydark" size="24" class="cursor-pointer"/>
-          <icon name="loading" :color="brandColors.graydark" size="24" class="cursor-pointer ml-3"/>
+        <span v-if="state.hasError">Erro ao carregar a apiKey</span>
+        <span v-else>{{ store.User.currentUser.apiKey }}</span>
+        <div v-if="!state.hasError" class="flex items-center align-items-center justify-center ml-20 mr-5">
+          <icon @click="handleCopy" name="copy" :color="brandColors.graydark" size="24" class="cursor-pointer"/>
+          <icon @click="handleGenerateApikey" name="loading" :color="brandColors.graydark" size="24" class="cursor-pointer ml-3"/>
         </div>
       </div>
       <p class="mt-5 text-lg text-center tex-gray-800 font-regular">
@@ -41,30 +42,72 @@
         height="52px"
       />
       <div v-else class="py-3 pl-5 pr-20 mt-2 rounded bg-brand-gray w-full lg:w-2/3 overflow-x-scroll">
-        <pre>&lt;script src="https://brenofroes-feedbacker-widget.netlify.app?api_key${{store.User.currentUser.apiKey}}"&gt;&lt;/script&gt;</pre>
+        <span v-if="state.hasError">Erro ao carregar o script</span>
+        <pre v-else>&lt;script src="https://brenofroes-feedbacker-widget.netlify.app?api_key${{store.User.currentUser.apiKey}}"&gt;&lt;/script&gt;</pre>
       </div>
     </div>
   </div>
 </template>
 
 <script>
-import { reactive } from 'vue'
+import { reactive, watch } from 'vue'
 import useStore from '@/hooks/useStore'
-import ContentLoader from '../../components/ContentLoader/index.vue'
-import HeaderLogged from '../../components/HeaderLogged/index.vue'
-import Icon from '../../components/Icon/index.vue'
+import ContentLoader from '@/components/ContentLoader/index.vue'
+import HeaderLogged from '@/components/HeaderLogged/index.vue'
+import Icon from '@/components/Icon/index.vue'
 import palette from '../../../palette'
+import services from '@/services'
+import { setApiKey } from '@/store/user'
+import { useToast } from 'vue-toastification'
 
 export default {
   components: { HeaderLogged, Icon, ContentLoader },
   setup () {
     const store = useStore()
+    const toast = useToast()
     const state = reactive({
+      hasError: false,
       isLoading: false
     })
+
+    watch(() => store.User.currentUser, () => {
+      if (!store.Global.isLoading && !store.User.currentUser.apiKey) {
+        handleError(true)
+      }
+    })
+
+    function handleError (error) {
+      state.hasError = !!error
+      state.isLoading = false
+    }
+
+    async function handleGenerateApikey () {
+      try {
+        state.isLoading = true
+        const { data } = await services.users.generateApikey()
+        setApiKey(data.apiKey)
+        state.isLoading = false
+      } catch (error) {
+        handleError(error)
+      }
+    }
+
+    async function handleCopy () {
+      toast.clear()
+
+      try {
+        await navigator.clipboard.writeText(store.User.currentUser.apiKey)
+        toast.success('Copiado')
+      } catch (error) {
+        handleError(error)
+      }
+    }
+
     return {
       store,
       state,
+      handleCopy,
+      handleGenerateApikey,
       brandColors: palette.brand
     }
   }
