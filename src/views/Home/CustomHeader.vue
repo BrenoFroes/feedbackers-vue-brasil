@@ -3,29 +3,20 @@
     <div class="header-group">
       <div class="flex items-center justify-between py-10">
         <div class="w-28 lg:w-36">
-          <img
-            class="w-full"
-            src="../../assets/images/logo_white.png"
-            alt="logo"
-          />
+          <img class="w-full" src="../../assets/images/logo_white.png" alt="logo" />
         </div>
         <div class="flex">
-          <button
-          @click="() => emit('create-account')"
-            class="
+          <button id="header-create-account-button" @click="() => emit('create-account')" class="
               px-6
               py-2
               text-white
               font-bold
               rounded-full
               focus:outline-none
-            "
-          >
+            ">
             Crie uma conta
           </button>
-          <button
-            @click="() => emit('login')"
-            class="
+          <button id="header-login-button" @click="() => emit('login')" class="
               px-6
               py-2
               bg-white
@@ -33,8 +24,7 @@
               font-bold
               rounded-full
               focus:outline-none
-            "
-          >
+            ">
             Entrar
           </button>
         </div>
@@ -51,8 +41,7 @@
           simples widget na página.
         </p>
         <div>
-          <button
-            class="
+          <button id="cta-create-account-button" @click="() => emit('create-account')" class="
               px-6
               py-2
               mt-10
@@ -61,8 +50,7 @@
               font-bold
               rounded-full
               focus:outline-none
-            "
-          >
+            ">
             Crie uma conta grátis
           </button>
         </div>
