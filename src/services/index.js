@@ -6,13 +6,13 @@ import FeedbacksService from './feedbacks'
 import { setGlobalLoading } from '@/store/global'
 
 const API_ENVS = {
-  production: '',
+  production: 'https://backend-feedbackers-vuejs.vercel.app',
   development: '',
   local: 'http://localhost:3000'
 }
 
 const httpClient = axios.create({
-  baseURL: API_ENVS.local
+  baseURL: API_ENVS[process.env.NODE_ENV] ?? API_ENVS.local
 })
 
 httpClient.interceptors.request.use(config => {
@@ -41,6 +41,7 @@ httpClient.interceptors.response.use((response) => {
   if (error.response.status === 401) {
     router.push({ name: 'Home' })
   }
+
   setGlobalLoading(false)
   return error
 })
